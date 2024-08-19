@@ -1,132 +1,330 @@
--- Geração de Modelo físico
--- Sql ANSI 2003 - brModelo.
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Tempo de geração: 19-Ago-2024 às 14:01
+-- Versão do servidor: 10.4.27-MariaDB
+-- versão do PHP: 8.0.25
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-CREATE TABLE Proprietario (
-    idproprietario INT PRIMARY KEY AUTO_INCREMENT,
-    datanasc DATE,
-    cpf VARCHAR(11) UNIQUE NOT NULL,
-    rg VARCHAR(20) UNIQUE NOT NULL,
-    telefone VARCHAR(20),
-    nome VARCHAR(155) NOT NULL,
-    email VARCHAR(155) UNIQUE NOT NULL,
-    endereco VARCHAR(155),
-    agencia VARCHAR(100) NOT NULL,
-    numconta VARCHAR(100) NOT NULL,
-    banco varchar(50) NOT NULL,
-    pix VARCHAR(100) NOT NULL,
-    qimovel INT,
-    FOREIGN KEY (qimovel) REFERENCES Imovel (idimovel)
-);
+--
+-- Banco de dados: `imobiliaria`
+--
+CREATE DATABASE IF NOT EXISTS `imobiliaria` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `imobiliaria`;
 
-CREATE TABLE Imovel (
-    idimovel INT PRIMARY KEY AUTO_INCREMENT,
-    estado VARCHAR(155) NOT NULL,
-    num VARCHAR(10) NOT NULL,
-    cidade VARCHAR(155) NOT NULL,
-    bairro VARCHAR(155) NOT NULL,
-    rua VARCHAR(155) NOT NULL,
-    complemento VARCHAR(155),
-    cep VARCHAR(10) NOT NULL,
-    codaluguel INT,
-    FOREIGN KEY (codaluguel) REFERENCES Aluguel (codaluguel)
-);
+-- --------------------------------------------------------
 
-CREATE TABLE Info (
-    idinfo INT PRIMARY KEY AUTO_INCREMENT,
-    quintal BIT,
-    banheiro BIT,
-    quarto BIT,
-    cozinha BIT,
-    saladejantar BIT,
-    saladeestar BIT,
-    lavanderia BIT,
-    garagem BIT,
-    suite BIT,
-    areaconstruida DECIMAL(4,2) NOT NULL,
-    condicoes VARCHAR(155),
-    adicionais VARCHAR(155),
-    piscina BIT,
-    idimovel INT,
-    FOREIGN KEY (idimovel) REFERENCES Imovel (idimovel)
-);
+--
+-- Estrutura da tabela `aluguel`
+--
 
-CREATE TABLE Midia (
-    idmidia INT PRIMARY KEY AUTO_INCREMENT,
-    videos VARCHAR(255),
-    fotos VARCHAR(255),
-    idimovel INT,
-    FOREIGN KEY (idimovel) REFERENCES Imovel (idimovel)
-);
+CREATE TABLE `aluguel` (
+  `codaluguel` int(11) NOT NULL,
+  `datafim` date NOT NULL,
+  `valor` decimal(15,2) DEFAULT NULL,
+  `datainicio` date NOT NULL,
+  `datapagamento` date DEFAULT NULL,
+  `condicoes` varchar(155) DEFAULT NULL,
+  `datacadastro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `datavencimento` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
-CREATE TABLE Corretor (
-    idcorretor INT PRIMARY KEY AUTO_INCREMENT,
-    datanasc DATE NOT NULL,
-    tel VARCHAR(20),
-    email VARCHAR(155) UNIQUE NOT NULL,
-    rg VARCHAR(20)  UNIQUE NOT NULL,
-    cpf VARCHAR(11)  UNIQUE NOT NULL,
-    nome VARCHAR(155) NOT NULL,
-    cidade VARCHAR(155) NOT NULL,
-    bairro VARCHAR(155) NOT NULL,
-    rua VARCHAR(155) NOT NULL,
-    complemento VARCHAR(155) NOT NULL,
-    contrato VARCHAR(255) NOT NULL,
-    codaluguel INT,
-    FOREIGN KEY (codaluguel) REFERENCES Aluguel (codaluguel)
-);
+-- --------------------------------------------------------
 
-CREATE TABLE Fiador (
-    idfiador INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(155) NOT NULL,
-    datanasc DATE,
-    cpf VARCHAR(11) UNIQUE NOT NULL,
-    rg VARCHAR(20) UNIQUE NOT NULL,
-    email VARCHAR(155) UNIQUE NOT NULL,
-    rua VARCHAR(155) NOT NULL,
-    cidade VARCHAR(155) NOT NULL,
-    estado VARCHAR(155) NOT NULL,
-    telefone VARCHAR(20)
-);
+--
+-- Estrutura da tabela `contrata`
+--
 
-CREATE TABLE Inquilino (
-    idinquilino INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(155) NOT NULL,
-    datanasc DATE,
-    rg VARCHAR(20) UNIQUE NOT NULL,
-    cpf VARCHAR(11) UNIQUE NOT NULL,
-    email VARCHAR(155) UNIQUE NOT NULL,
-    estado VARCHAR(155) NOT NULL,
-    cidade VARCHAR(155) NOT NULL,
-    rua VARCHAR(155) NOT NULL,
-    telefone VARCHAR(20),
-    agencia VARCHAR(155) NOT NULL,
-    numconta VARCHAR(155) NOT NULL,
-    pix VARCHAR(155) NOT NULL,
-    idfiador INT,
-    FOREIGN KEY (idfiador) REFERENCES Fiador (idfiador)
-);
+CREATE TABLE `contrata` (
+  `idinquilino` int(11) DEFAULT NULL,
+  `idcorretor` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
-CREATE TABLE Contrata (
-    idinquilino INT,
-    idcorretor INT,
-    FOREIGN KEY (idinquilino) REFERENCES Inquilino (idinquilino),
-    FOREIGN KEY (idcorretor) REFERENCES Corretor (idcorretor)
-);
+-- --------------------------------------------------------
 
-CREATE TABLE Aluguel (
-    codaluguel INT PRIMARY KEY AUTO_INCREMENT,
-    datafim DATE NOT NULL,
-    valor DECIMAL(15,2),
-    datainicio DATE NOT NULL,
-    datapagamento DATE,
-    condicoes VARCHAR(155),
-    datacadastro TIMESTAMP,
-    datavencimento DATE
-);
+--
+-- Estrutura da tabela `corretor`
+--
 
-ALTER TABLE Info ADD FOREIGN KEY(idimovel) REFERENCES Imóvel (idimovel)
-ALTER TABLE Imóvel ADD FOREIGN KEY(codaluguel) REFERENCES aluguel (codaluguel)
-ALTER TABLE Corretor ADD FOREIGN KEY(codaluguel) REFERENCES aluguel (codaluguel)
-ALTER TABLE Inquilino ADD FOREIGN KEY(idfiador) REFERENCES Fiador (idfiador)
+CREATE TABLE `corretor` (
+  `idcorretor` int(11) NOT NULL,
+  `datanasc` date NOT NULL,
+  `tel` varchar(20) DEFAULT NULL,
+  `email` varchar(155) NOT NULL,
+  `rg` varchar(20) NOT NULL,
+  `cpf` varchar(11) NOT NULL,
+  `nome` varchar(155) NOT NULL,
+  `cidade` varchar(155) NOT NULL,
+  `bairro` varchar(155) NOT NULL,
+  `rua` varchar(155) NOT NULL,
+  `complemento` varchar(155) NOT NULL,
+  `contrato` varchar(255) NOT NULL,
+  `codaluguel` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `fiador`
+--
+
+CREATE TABLE `fiador` (
+  `idfiador` int(11) NOT NULL,
+  `nome` varchar(155) NOT NULL,
+  `datanasc` date DEFAULT NULL,
+  `cpf` varchar(11) NOT NULL,
+  `rg` varchar(20) NOT NULL,
+  `email` varchar(155) NOT NULL,
+  `rua` varchar(155) NOT NULL,
+  `cidade` varchar(155) NOT NULL,
+  `estado` varchar(155) NOT NULL,
+  `telefone` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `imovel`
+--
+
+CREATE TABLE `imovel` (
+  `idimovel` int(11) NOT NULL,
+  `estado` varchar(155) NOT NULL,
+  `num` varchar(10) NOT NULL,
+  `cidade` varchar(155) NOT NULL,
+  `bairro` varchar(155) NOT NULL,
+  `rua` varchar(155) NOT NULL,
+  `complemento` varchar(155) DEFAULT NULL,
+  `cep` varchar(10) NOT NULL,
+  `codaluguel` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `info`
+--
+
+CREATE TABLE `info` (
+  `idinfo` int(11) NOT NULL,
+  `quintal` bit(1) DEFAULT NULL,
+  `banheiro` bit(1) DEFAULT NULL,
+  `quarto` bit(1) DEFAULT NULL,
+  `cozinha` bit(1) DEFAULT NULL,
+  `saladejantar` bit(1) DEFAULT NULL,
+  `saladeestar` bit(1) DEFAULT NULL,
+  `lavanderia` bit(1) DEFAULT NULL,
+  `garagem` bit(1) DEFAULT NULL,
+  `suite` bit(1) DEFAULT NULL,
+  `areaconstruida` decimal(4,2) NOT NULL,
+  `condicoes` varchar(155) DEFAULT NULL,
+  `adicionais` varchar(155) DEFAULT NULL,
+  `piscina` bit(1) DEFAULT NULL,
+  `idimovel` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `inquilino`
+--
+
+CREATE TABLE `inquilino` (
+  `idinquilino` int(11) NOT NULL,
+  `nome` varchar(155) NOT NULL,
+  `datanasc` date DEFAULT NULL,
+  `rg` varchar(20) NOT NULL,
+  `cpf` varchar(11) NOT NULL,
+  `email` varchar(155) NOT NULL,
+  `estado` varchar(155) NOT NULL,
+  `cidade` varchar(155) NOT NULL,
+  `rua` varchar(155) NOT NULL,
+  `telefone` varchar(20) DEFAULT NULL,
+  `agencia` varchar(155) NOT NULL,
+  `numconta` varchar(155) NOT NULL,
+  `pix` varchar(155) NOT NULL,
+  `idfiador` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `midia`
+--
+
+CREATE TABLE `midia` (
+  `idmidia` int(11) NOT NULL,
+  `videos` varchar(255) DEFAULT NULL,
+  `fotos` varchar(255) DEFAULT NULL,
+  `idimovel` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `proprietario`
+--
+
+CREATE TABLE `proprietario` (
+  `idproprietario` int(11) NOT NULL,
+  `datanasc` date DEFAULT NULL,
+  `cpf` varchar(11) NOT NULL,
+  `rg` varchar(20) NOT NULL,
+  `telefone` varchar(20) DEFAULT NULL,
+  `nome` varchar(155) NOT NULL,
+  `email` varchar(155) NOT NULL,
+  `endereco` varchar(155) DEFAULT NULL,
+  `agencia` varchar(100) NOT NULL,
+  `numconta` varchar(100) NOT NULL,
+  `banco` varchar(50) NOT NULL,
+  `pix` varchar(100) NOT NULL,
+  `qimovel` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Extraindo dados da tabela `proprietario`
+--
+
+INSERT INTO `proprietario` (`idproprietario`, `datanasc`, `cpf`, `rg`, `telefone`, `nome`, `email`, `endereco`, `agencia`, `numconta`, `banco`, `pix`, `qimovel`) VALUES
+(1, '1945-07-08', '123.456.789', '12 345 678-9', '+55 (11) 95598-5097', 'Arnaldo Sacomani', 'arnaldinho@gmail.com', 'casa das maquinas', '1456', '78690435-9', 'Banco do Brasil', '16987361837', 5),
+(2, '1982-01-15', '111.222.333', '11 222 333-4', '+55 (11) 91234-5678', 'Marcos Lima', 'marcos.lima@example.com', 'Rua A, 100', '0012', '34567890-1', 'Banco do Brasil', '12345678901', 3),
+(3, '1978-06-20', '222.333.444', '22 333 444-5', '+55 (21) 92345-6789', 'Beatriz Silva', 'beatriz.silva@example.com', 'Avenida B, 200', '0023', '45678901-2', 'Itaú', '23456789012', 2),
+(4, '1990-11-30', '333.444.555', '33 444 555-6', '+55 (31) 93456-7890', 'Lucas Oliveira', 'lucas.oliveira@example.com', 'Rua C, 300', '0034', '56789012-3', 'Bradesco', '34567890123', 4),
+(5, '1985-04-10', '444.555.666', '44 555 666-7', '+55 (41) 94567-8901', 'Juliana Costa', 'juliana.costa@example.com', 'Praça D, 400', '0045', '67890123-4', 'Santander', '45678901234', 1),
+(6, '1992-08-25', '555.666.777', '55 666 777-8', '+55 (51) 95678-9012', 'Rafael Santos', 'rafael.santos@example.com', 'Rua E, 500', '0056', '78901234-5', 'Caixa Econômica', '56789012345', 3),
+(7, '1980-12-05', '666.777.888', '66 777 888-9', '+55 (61) 96789-0123', 'Claudia Pereira', 'claudia.pereira@example.com', 'Avenida Q, 600', '0067', '89012345-6', 'Banco do Brasil', '67890123456', 2),
+(8, '1995-07-18', '777.888.999', '77 888 999-0', '+55 (71) 97890-1234', 'Fernando Almeida', 'fernando.almeida@example.com', 'Rua G, 700', '0078', '90123456-7', 'Itaú', '78901234567', 4),
+(9, '1983-03-30', '888.999.000', '88 999 000-1', '+55 (81) 98901-2345', 'Patrícia Santos', 'patricia.santos@example.com', 'Praça H, 800', '0089', '01234567-8', 'Bradesco', '89012345678', 1),
+(10, '1998-05-12', '999.000.111', '99 000 111-2', '+55 (91) 99012-3456', 'Eduardo Lima', 'eduardo.lima@example.com', 'Rua I, 900', '0090', '12345678-9', 'Santander', '90123456789', 2);
+
+--
+-- Índices para tabelas despejadas
+--
+
+--
+-- Índices para tabela `aluguel`
+--
+ALTER TABLE `aluguel`
+  ADD PRIMARY KEY (`codaluguel`);
+
+--
+-- Índices para tabela `corretor`
+--
+ALTER TABLE `corretor`
+  ADD PRIMARY KEY (`idcorretor`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `rg` (`rg`),
+  ADD UNIQUE KEY `cpf` (`cpf`);
+
+--
+-- Índices para tabela `fiador`
+--
+ALTER TABLE `fiador`
+  ADD PRIMARY KEY (`idfiador`),
+  ADD UNIQUE KEY `cpf` (`cpf`),
+  ADD UNIQUE KEY `rg` (`rg`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Índices para tabela `imovel`
+--
+ALTER TABLE `imovel`
+  ADD PRIMARY KEY (`idimovel`);
+
+--
+-- Índices para tabela `info`
+--
+ALTER TABLE `info`
+  ADD PRIMARY KEY (`idinfo`);
+
+--
+-- Índices para tabela `inquilino`
+--
+ALTER TABLE `inquilino`
+  ADD PRIMARY KEY (`idinquilino`),
+  ADD UNIQUE KEY `rg` (`rg`),
+  ADD UNIQUE KEY `cpf` (`cpf`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Índices para tabela `midia`
+--
+ALTER TABLE `midia`
+  ADD PRIMARY KEY (`idmidia`);
+
+--
+-- Índices para tabela `proprietario`
+--
+ALTER TABLE `proprietario`
+  ADD PRIMARY KEY (`idproprietario`),
+  ADD UNIQUE KEY `cpf` (`cpf`),
+  ADD UNIQUE KEY `rg` (`rg`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- AUTO_INCREMENT de tabelas despejadas
+--
+
+--
+-- AUTO_INCREMENT de tabela `aluguel`
+--
+ALTER TABLE `aluguel`
+  MODIFY `codaluguel` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `corretor`
+--
+ALTER TABLE `corretor`
+  MODIFY `idcorretor` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `fiador`
+--
+ALTER TABLE `fiador`
+  MODIFY `idfiador` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `imovel`
+--
+ALTER TABLE `imovel`
+  MODIFY `idimovel` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `info`
+--
+ALTER TABLE `info`
+  MODIFY `idinfo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `inquilino`
+--
+ALTER TABLE `inquilino`
+  MODIFY `idinquilino` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `midia`
+--
+ALTER TABLE `midia`
+  MODIFY `idmidia` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `proprietario`
+--
+ALTER TABLE `proprietario`
+  MODIFY `idproprietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
